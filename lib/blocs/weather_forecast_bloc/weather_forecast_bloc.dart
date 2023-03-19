@@ -13,5 +13,23 @@ class WeatherForecastBloc
 
   @override
   Stream<WeatherForecastState> mapEventToState(
-      WeatherForecastEvent event) async* {}
+      WeatherForecastEvent event) async* {
+    // ignore: avoid_print
+    print("in forecast weather bloc");
+
+    if (event is FetchWeatherForecastEvent) {
+      try {
+        yield WeatherForecastLoadingState();
+        var data =
+            await weatherRepository.getWeatherForecast(event.lat, event.lon);
+        // ignore: avoid_print
+        print("***Loaded");
+        // ignore: avoid_print
+        print(data);
+        yield WeatherForecastLoadedState(forecast: data);
+      } catch (e) {
+        yield WeatherForecastErrorState(error: e.toString());
+      }
+    }
+  }
 }

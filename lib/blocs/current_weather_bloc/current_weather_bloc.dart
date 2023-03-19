@@ -14,5 +14,25 @@ class CurrentWeatherBloc
 
   @override
   Stream<CurrentWeatherState> mapEventToState(
-      CurrentWeatherEvent event) async* {}
+      CurrentWeatherEvent event) async* {
+    // ignore: avoid_print
+    print("in current weather bloc");
+
+    if (event is FetchCurrentWeatherEvent) {
+      try {
+        yield CurrentWeatherLoadingState();
+        var data = await weatherRepository.getCurrentWeatherCondition(
+            event.lat, event.lon);
+
+        // ignore: avoid_print
+        print("***Loaded");
+        // ignore: avoid_print
+        print(data);
+
+        yield CurrentWeatherLoadedState(current: data);
+      } catch (e) {
+        yield CurrentWeatherErrorState(error: e.toString());
+      }
+    }
+  }
 }
