@@ -1,3 +1,4 @@
+import 'package:dvt_weather_app/data/repositories/weather_repository/weather_provider.dart';
 import 'package:dvt_weather_app/data/repositories/weather_repository/weather_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +11,9 @@ class AppRepositories extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(providers: [
-      RepositoryProvider(create: (context) => WeatherRepository())
+      RepositoryProvider(
+          create: (context) =>
+              WeatherRepository(weatherProvider: WeatherProvider()))
     ], child: appBlocs);
   }
 }
