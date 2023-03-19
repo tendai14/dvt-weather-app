@@ -37,6 +37,6 @@ class WeatherProvider {
     // ignore: avoid_print
     print(jsonDecode(response.body));
 
-    return jsonDecode(response.body);
+    return response.body;
   }
 }
