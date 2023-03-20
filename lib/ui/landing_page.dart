@@ -132,7 +132,28 @@ class _LandingPageState extends State<LandingPage> {
                                             fit: BoxFit.fill,
                                           ),
                                         )
-                                      : Container(),
+                                      : weatherState
+                                              .toString()
+                                              .toLowerCase()
+                                              .contains('mist')
+                                          ? Container(
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              child: Image.asset(
+                                                'assets/images/forest_rainy.png',
+                                                fit: BoxFit.fill,
+                                              ),
+                                            )
+                                          : Container(
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              child: Image.asset(
+                                                'assets/images/forest_sunny.png',
+                                                fit: BoxFit.fill,
+                                              ),
+                                            ),
                       Column(
                         children: [
                           Padding(
@@ -209,7 +230,12 @@ class _LandingPageState extends State<LandingPage> {
                                             .toLowerCase()
                                             .contains('clouds')
                                         ? appColorCloudy
-                                        : appColorWhite,
+                                        : weatherState
+                                                .toString()
+                                                .toLowerCase()
+                                                .contains('mist')
+                                            ? appColorRainy
+                                            : appColorSunny,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
