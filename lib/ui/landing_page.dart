@@ -5,6 +5,7 @@ import 'package:dvt_weather_app/helpers/date_converter.dart';
 import 'package:dvt_weather_app/res/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 
 class LandingPage extends StatefulWidget {
@@ -17,15 +18,27 @@ class LandingPage extends StatefulWidget {
 class _LandingPageState extends State<LandingPage> {
   @override
   void initState() {
+    super.initState();
+    _callBlocs();
+  }
+
+  _callBlocs() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    Position? position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
     BlocProvider.of<CurrentWeatherBloc>(context).add(
-      const FetchCurrentWeatherEvent(lat: -17.6, lon: -31.4),
+      FetchCurrentWeatherEvent(lat: position.latitude, lon: position.longitude),
     );
 
     BlocProvider.of<WeatherForecastBloc>(context).add(
-      const FetchWeatherForecastEvent(lat: -17.6, lon: -31.4),
+      FetchWeatherForecastEvent(
+          lat: position.latitude, lon: position.longitude),
     );
-
-    super.initState();
   }
 
   @override
@@ -207,7 +220,7 @@ class _LandingPageState extends State<LandingPage> {
         ),
         BlocConsumer<WeatherForecastBloc, WeatherForecastState>(
           listener: (context, state) {
-            // TODO: implement listener
+            // ignore: avoid_print
             print(state);
           },
           builder: (context, state) {
@@ -230,8 +243,6 @@ Widget _buildForecast(Forecast forecast) {
     itemBuilder: ((context, index) {
       var forecasts = forecast.list[index].weather;
       var weatherState = forecasts.map((element) => element.main);
-
-      print(forecast.list[index].dtTxt);
       return Container(
           color: Colors.blueGrey,
           child: Row(
