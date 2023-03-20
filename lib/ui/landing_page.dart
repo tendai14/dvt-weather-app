@@ -3,6 +3,7 @@ import 'package:dvt_weather_app/blocs/weather_forecast_bloc/weather_forecast_blo
 import 'package:dvt_weather_app/data/models/forecast.dart';
 import 'package:dvt_weather_app/helpers/date_converter.dart';
 import 'package:dvt_weather_app/res/app_colors.dart';
+import 'package:dvt_weather_app/widgets/navigation_rail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
@@ -44,45 +45,52 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.blueGrey,
+        ),
+        drawer: const GlobalNavigationRail(),
         body: ListView(
-      children: [
-        BlocConsumer<CurrentWeatherBloc, CurrentWeatherState>(
-          listener: (context, state) {
-            // ignore: avoid_print
-            print(state);
-            if (state is CurrentWeatherErrorState) {
-              Center(
-                child: Text(state.error),
-              );
-            }
-          },
-          builder: (context, state) {
-            if (state is CurrentWeatherLoadingState) {
-              return const Center(
-                child: SimpleCircularProgressBar(
-                  progressColors: [
-                    appColorRainy,
-                    appColorSunny,
-                    appColorCloudy
-                  ],
-                ),
-              );
-            }
-            if (state is CurrentWeatherLoadedState) {
-              var weatherState =
-                  state.current.weather!.map((e) => e.main).toString();
-              print(weatherState);
-              return Stack(
-                children: [
-                  weatherState.toString().toLowerCase().contains('clear')
-                      ? Container(
-                          width: MediaQuery.of(context).size.width,
-                          child: Image.asset(
-                            'assets/images/forest_sunny.png',
-                            fit: BoxFit.fill,
+          children: [
+            BlocConsumer<CurrentWeatherBloc, CurrentWeatherState>(
+              listener: (context, state) {
+                // ignore: avoid_print
+                print(state);
+                if (state is CurrentWeatherErrorState) {
+                  Center(
+                    child: Text(state.error),
+                  );
+                }
+              },
+              builder: (context, state) {
+                if (state is CurrentWeatherLoadingState) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 80),
+                      child: Column(
+                        children: const [
+                          SimpleCircularProgressBar(
+                            progressColors: [
+                              appColorRainy,
+                              appColorSunny,
+                              appColorCloudy
+                            ],
                           ),
-                        )
-                      : weatherState.toString().toLowerCase().contains('sunny')
+                          Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text('Loading Please Wait...'),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                if (state is CurrentWeatherLoadedState) {
+                  var weatherState =
+                      state.current.weather!.map((e) => e.main).toString();
+                  print(weatherState);
+                  return Stack(
+                    children: [
+                      weatherState.toString().toLowerCase().contains('clear')
                           ? Container(
                               width: MediaQuery.of(context).size.width,
                               child: Image.asset(
@@ -93,145 +101,181 @@ class _LandingPageState extends State<LandingPage> {
                           : weatherState
                                   .toString()
                                   .toLowerCase()
-                                  .contains('rain')
+                                  .contains('sunny')
                               ? Container(
                                   width: MediaQuery.of(context).size.width,
                                   child: Image.asset(
-                                    'assets/images/forest_rainy.png',
+                                    'assets/images/forest_sunny.png',
                                     fit: BoxFit.fill,
                                   ),
                                 )
                               : weatherState
                                       .toString()
                                       .toLowerCase()
-                                      .contains('clouds')
+                                      .contains('rain')
                                   ? Container(
                                       width: MediaQuery.of(context).size.width,
                                       child: Image.asset(
-                                        'assets/images/forest_cloudy.png',
+                                        'assets/images/forest_rainy.png',
                                         fit: BoxFit.fill,
                                       ),
                                     )
-                                  : Container(),
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 100),
-                        child: Center(
-                          child: Text(
-                            '${state.current.main?.temp}\u{00B0}',
-                            style: const TextStyle(
-                                color: appColorWhite, fontSize: 30),
+                                  : weatherState
+                                          .toString()
+                                          .toLowerCase()
+                                          .contains('clouds')
+                                      ? Container(
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          child: Image.asset(
+                                            'assets/images/forest_cloudy.png',
+                                            fit: BoxFit.fill,
+                                          ),
+                                        )
+                                      : Container(),
+                      Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 100),
+                            child: Center(
+                              child: Text(
+                                '${state.current.main?.temp}\u{00B0}',
+                                style: const TextStyle(
+                                    color: appColorWhite, fontSize: 30),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(30),
-                        child: Center(
-                          child: Text(
-                            weatherState.toString(),
-                            style: const TextStyle(
-                                color: appColorWhite, fontSize: 30),
+                          Padding(
+                            padding: const EdgeInsets.all(30),
+                            child: Center(
+                              child: Text(
+                                weatherState.toString(),
+                                style: const TextStyle(
+                                    color: appColorWhite, fontSize: 30),
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ],
-                  ),
-                ],
-              );
-            }
+                  );
+                }
 
-            return const Center(
-                child: Text(
-              "Oops, Something went wrong",
-              style:
-                  TextStyle(color: appColorCloudy, fontWeight: FontWeight.bold),
-            ));
-          },
-        ),
-        BlocConsumer<CurrentWeatherBloc, CurrentWeatherState>(
-          listener: (context, state) {},
-          builder: (context, state) {
-            if (state is CurrentWeatherLoadedState) {
-              var weatherState =
-                  state.current.weather!.map((e) => e.main).first;
-              return Container(
-                height: 60,
-                color: weatherState.toString().toLowerCase().contains('clear')
-                    ? appColorSunny
-                    : weatherState.toString().toLowerCase().contains('sunny')
-                        ? appColorSunny
-                        : weatherState.toString().toLowerCase().contains('rain')
-                            ? appColorRainy
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 80),
+                    child: Column(
+                      children: const [
+                        SimpleCircularProgressBar(
+                          progressColors: [
+                            appColorRainy,
+                            appColorSunny,
+                            appColorCloudy
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('Loading Please Wait...'),
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+            BlocConsumer<CurrentWeatherBloc, CurrentWeatherState>(
+              listener: (context, state) {},
+              builder: (context, state) {
+                if (state is CurrentWeatherLoadedState) {
+                  var weatherState =
+                      state.current.weather!.map((e) => e.main).first;
+                  return Container(
+                    height: 60,
+                    color:
+                        weatherState.toString().toLowerCase().contains('clear')
+                            ? appColorSunny
                             : weatherState
                                     .toString()
                                     .toLowerCase()
-                                    .contains('clouds')
-                                ? appColorCloudy
-                                : appColorWhite,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Column(
+                                    .contains('sunny')
+                                ? appColorSunny
+                                : weatherState
+                                        .toString()
+                                        .toLowerCase()
+                                        .contains('rain')
+                                    ? appColorRainy
+                                    : weatherState
+                                            .toString()
+                                            .toLowerCase()
+                                            .contains('clouds')
+                                        ? appColorCloudy
+                                        : appColorWhite,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text(
-                          '${state.current.main!.tempMin}\u{00B0}',
-                          style: const TextStyle(
-                              color: appColorWhite, fontSize: 20),
+                        Column(
+                          children: [
+                            Text(
+                              '${state.current.main!.tempMin}\u{00B0}',
+                              style: const TextStyle(
+                                  color: appColorWhite, fontSize: 20),
+                            ),
+                            const Text(
+                              'min',
+                              style:
+                                  TextStyle(color: appColorWhite, fontSize: 20),
+                            ),
+                          ],
                         ),
-                        const Text(
-                          'min',
-                          style: TextStyle(color: appColorWhite, fontSize: 20),
+                        Column(
+                          children: [
+                            Text(
+                              '${state.current.main!.temp}\u{00B0}',
+                              style: const TextStyle(
+                                  color: appColorWhite, fontSize: 20),
+                            ),
+                            const Text(
+                              'Current',
+                              style:
+                                  TextStyle(color: appColorWhite, fontSize: 20),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text(
+                              '${state.current.main!.temp}\u{00B0}',
+                              style: const TextStyle(
+                                  color: appColorWhite, fontSize: 20),
+                            ),
+                            const Text(
+                              'max',
+                              style:
+                                  TextStyle(color: appColorWhite, fontSize: 20),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                    Column(
-                      children: [
-                        Text(
-                          '${state.current.main!.temp}\u{00B0}',
-                          style: const TextStyle(
-                              color: appColorWhite, fontSize: 20),
-                        ),
-                        const Text(
-                          'Current',
-                          style: TextStyle(color: appColorWhite, fontSize: 20),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Text(
-                          '${state.current.main!.temp}\u{00B0}',
-                          style: const TextStyle(
-                              color: appColorWhite, fontSize: 20),
-                        ),
-                        const Text(
-                          'max',
-                          style: TextStyle(color: appColorWhite, fontSize: 20),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            }
-            return Container();
-          },
-        ),
-        BlocConsumer<WeatherForecastBloc, WeatherForecastState>(
-          listener: (context, state) {
-            // ignore: avoid_print
-            print(state);
-          },
-          builder: (context, state) {
-            if (state is WeatherForecastLoadedState) {
-              return _buildForecast(state.forecast);
-            }
-            return Container();
-          },
-        )
-      ],
-    ));
+                  );
+                }
+                return Container();
+              },
+            ),
+            BlocConsumer<WeatherForecastBloc, WeatherForecastState>(
+              listener: (context, state) {
+                // ignore: avoid_print
+                print(state);
+              },
+              builder: (context, state) {
+                if (state is WeatherForecastLoadedState) {
+                  return _buildForecast(state.forecast);
+                }
+                return Container();
+              },
+            )
+          ],
+        ));
   }
 }
 
