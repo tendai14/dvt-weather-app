@@ -48,7 +48,7 @@ class _NavigationRailExampleState extends State<GlobalNavigationRail> {
         ),
       ),
       const NavigationRailDestination(
-        icon: Icon(Icons.home),
+        icon: Icon(Icons.save),
         label: Text('Save'),
       ),
       const NavigationRailDestination(
@@ -56,7 +56,7 @@ class _NavigationRailExampleState extends State<GlobalNavigationRail> {
         label: Text('Favorites'),
       ),
       const NavigationRailDestination(
-        icon: Icon(Icons.favorite),
+        icon: Icon(Icons.map),
         label: Text('Show on Map'),
       ),
       const NavigationRailDestination(
