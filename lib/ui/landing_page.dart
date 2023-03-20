@@ -236,51 +236,55 @@ class _LandingPageState extends State<LandingPage> {
 }
 
 Widget _buildForecast(Forecast forecast) {
-  return ListView.builder(
-    itemCount: forecast.list.length,
-    scrollDirection: Axis.vertical,
-    shrinkWrap: true,
-    itemBuilder: ((context, index) {
-      var forecasts = forecast.list[index].weather;
-      var weatherState = forecasts.map((element) => element.main);
-      return Container(
-          color: Colors.blueGrey,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text(
-                DateConverter.getDayOfTheWeek(forecast.list[index].dtTxt),
-                style: const TextStyle(fontSize: 20, color: appColorWhite),
-              ),
-              weatherState.toString().toLowerCase().contains("clear")
-                  ? const ImageIcon(
-                      AssetImage("assets/Icons/clear.png"),
-                      color: appColorWhite,
-                      size: 60,
-                    )
-                  : weatherState.toString().toLowerCase().contains("rain")
-                      ? const ImageIcon(
-                          AssetImage("assets/Icons/rain.png"),
-                          color: appColorWhite,
-                          size: 60,
-                        )
-                      : weatherState.toString().toLowerCase().contains("clouds")
-                          ? const ImageIcon(
-                              AssetImage("assets/Icons/partlysunny.png"),
-                              color: appColorWhite,
-                              size: 60,
-                            )
-                          : const ImageIcon(
-                              AssetImage("assets/Icons/partlysunny.png"),
-                              color: appColorWhite,
-                              size: 60,
-                            ),
-              Text(
-                '${forecast.list[index].main.temp}\u{00B0}',
-                style: const TextStyle(fontSize: 20, color: appColorWhite),
-              ),
-            ],
-          ));
-    }),
+  return Container(
+    height: 400,
+    child: ListView.builder(
+      itemCount: forecast.list.length,
+      itemBuilder: ((context, index) {
+        var forecasts = forecast.list[index].weather;
+        var weatherState = forecasts.map((element) => element.main);
+        return Container(
+            color: Colors.blueGrey,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(
+                  DateConverter.getDayOfTheWeek(forecast.list[index].dtTxt),
+                  style: const TextStyle(fontSize: 20, color: appColorWhite),
+                ),
+                weatherState.toString().toLowerCase().contains("clear")
+                    ? const ImageIcon(
+                        AssetImage("assets/Icons/clear.png"),
+                        color: appColorWhite,
+                        size: 100,
+                      )
+                    : weatherState.toString().toLowerCase().contains("rain")
+                        ? const ImageIcon(
+                            AssetImage("assets/Icons/rain.png"),
+                            color: appColorWhite,
+                            size: 60,
+                          )
+                        : weatherState
+                                .toString()
+                                .toLowerCase()
+                                .contains("clouds")
+                            ? const ImageIcon(
+                                AssetImage("assets/Icons/partlysunny.png"),
+                                color: appColorWhite,
+                                size: 60,
+                              )
+                            : const ImageIcon(
+                                AssetImage("assets/Icons/partlysunny.png"),
+                                color: appColorWhite,
+                                size: 60,
+                              ),
+                Text(
+                  '${forecast.list[index].main.temp}\u{00B0}',
+                  style: const TextStyle(fontSize: 20, color: appColorWhite),
+                ),
+              ],
+            ));
+      }),
+    ),
   );
 }
