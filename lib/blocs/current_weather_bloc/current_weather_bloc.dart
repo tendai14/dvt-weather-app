@@ -10,29 +10,49 @@ class CurrentWeatherBloc
   final WeatherRepository weatherRepository;
 
   CurrentWeatherBloc({required this.weatherRepository})
-      : super(CurrentWeatherInitial());
+      : super(CurrentWeatherInitial()) {
+    on<CurrentWeatherEvent>((event, emit) async {
+      if (event is FetchCurrentWeatherEvent) {
+        emit(CurrentWeatherLoadingState());
 
-  @override
-  Stream<CurrentWeatherState> mapEventToState(
-      CurrentWeatherEvent event) async* {
-    // ignore: avoid_print
-    print("in current weather bloc");
+        try {
+          var data = await weatherRepository.getCurrentWeatherCondition(
+              event.lat, event.lon);
 
-    if (event is FetchCurrentWeatherEvent) {
-      try {
-        yield CurrentWeatherLoadingState();
-        var data = await weatherRepository.getCurrentWeatherCondition(
-            event.lat, event.lon);
+          // ignore: avoid_print
+          print("***Loaded");
+          // ignore: avoid_print
+          print(data);
 
-        // ignore: avoid_print
-        print("***Loaded");
-        // ignore: avoid_print
-        print(data);
-
-        yield CurrentWeatherLoadedState(current: data);
-      } catch (e) {
-        yield CurrentWeatherErrorState(error: e.toString());
+          emit(CurrentWeatherLoadedState(current: data));
+        } catch (e) {
+          emit(CurrentWeatherErrorState(error: e.toString()));
+        }
       }
-    }
+    });
   }
+
+  // @override
+  // Stream<CurrentWeatherState> mapEventToState(
+  //     CurrentWeatherEvent event) async* {
+  //   // ignore: avoid_print
+  //   print("in current weather bloc");
+
+  //   if (event is FetchCurrentWeatherEvent) {
+  //     try {
+  //       yield CurrentWeatherLoadingState();
+  //       var data = await weatherRepository.getCurrentWeatherCondition(
+  //           event.lat, event.lon);
+
+  //       // ignore: avoid_print
+  //       print("***Loaded");
+  //       // ignore: avoid_print
+  //       print(data);
+
+  //       yield CurrentWeatherLoadedState(current: data);
+  //     } catch (e) {
+  //       yield CurrentWeatherErrorState(error: e.toString());
+  //     }
+  //   }
+  // }
 }
